@@ -1,0 +1,41 @@
+#include <stdio.h>
+
+// Function to exchange the values of two integers
+void EXCHANGE(int *p, int *q) {
+    int temp = *p;
+    *p = *q;
+    *q = temp;
+}
+
+// Function to right rotate the first p2 elements of an array
+void ROTATE_RIGHT(int *p1, int p2) {
+    if (p2 <= 1) return; // No rotation needed for 0 or 1 element
+
+    // Rotate the first p2 elements to the right by one position
+    for (int i = p2 - 1; i > 0; i--) {
+        EXCHANGE(&p1[i], &p1[i - 1]);
+    }
+}
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int p2 = 5; // Number of elements to rotate
+
+    printf("Original array:\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    // Rotate the first p2 elements to the right
+    ROTATE_RIGHT(arr, p2);
+
+    printf("Array after rotation:\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    return 0;
+}

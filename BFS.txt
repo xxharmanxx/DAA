@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_NODES 1001
+#define UNREACHABLE -1
+#define EDGE_WEIGHT 2
+
+int graph[MAX_NODES][MAX_NODES];
+int visited[MAX_NODES];
+int distance[MAX_NODES];
+
+void initializeGraph(int n) {
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= n; j++) {
+            graph[i][j] = 0;
+        }
+        visited[i] = 0;
+        distance[i] = UNREACHABLE;
+    }
+}
+
+void addEdge(int u, int v) {
+    graph[u][v] = 1;
+    graph[v][u] = 1;
+}
+
+void BFS(int start, int n) {
+    int queue[MAX_NODES], front = 0, rear = 0;
+    visited[start] = 1;
+    distance[start] = 0;
+    queue[rear++] = start;
+
+    while (front != rear) {
+        int current = queue[front++];
+        printf("%d ", current);
+
+        for (int i = 1; i <= n; i++) {
+            if (graph[current][i] && !visited[i]) {
+                visited[i] = 1;
+                distance[i] = distance[current] + EDGE_WEIGHT;
+                queue[rear++] = i;
+            }
+        }
+    }
+}
+
+int main() {
+    int n, m, u, v, start;
+    printf("Enter number of nodes and edges: ");
+    scanf("%d %d", &n, &m);
+
+    initializeGraph(n);
+
+    printf("Enter the edges:\n");
+    for (int i = 0; i < m; i++) {
+        scanf("%d %d", &u, &v);
+        addEdge(u, v);
+    }
+
+    printf("Enter the start node: ");
+    scanf("%d", &start);
+
+    printf("BFS Traversal: ");
+    BFS(start, n);
+    printf("\n");
+
+    printf("Distances: [");
+    for (int i = 1; i <= n; i++) {
+        if (i != start) {
+            printf("%d", distance[i]);
+            if (i < n) printf(", ");
+        }
+    }
+    printf("]\n");
+
+    return 0;
+}

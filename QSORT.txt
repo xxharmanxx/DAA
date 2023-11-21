@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int totalComparisons = 0;
+int isBestCase = 1;  // Flag to check if the partitioning is always best-case
+
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++) {
+        totalComparisons++;
+        if (arr[j] < pivot) {
+            i++;
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+    int temp = arr[i + 1];
+    arr[i + 1] = arr[high];
+    arr[high] = temp;
+
+    // Check for best-case partitioning (pivot divides array in half)
+    if (i != low + (high - low) / 2) {
+        isBestCase = 0;
+    }
+
+    return (i + 1);
+}
+
+void quickSort(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+void sortFromFileAndWrite(const char *inputFileName, const char *outputFileName) {
+    FILE *inputFile = fopen(inputFileName, "r");
+    if (inputFile == NULL) {
+        printf("Cannot open input file.\n");
+        exit(1);
+    }
+
+    int n, i = 0;
+    fscanf(inputFile, "%d", &n);
+    int *arr = (int *)malloc(n * sizeof(int));
+
+    while (fscanf(inputFile, "%d", &arr[i++]) == 1);
+    fclose(inputFile);
+
+    quickSort(arr, 0, n - 1);
+
+    FILE *outputFile = fopen(outputFileName, "w");
+    if (outputFile == NULL) {
+        printf("Cannot open output file.\n");
+        free(arr);
+        exit(1);
+    }
+
+    for (i = 0; i < n; i++) {
+        fprintf(outputFile, "%d ", arr[i]);
+    }
+    fprintf(outputFile, "\nTotal comparisons: %d\n", totalComparisons);
+    fprintf(outputFile, "Partitioning: %s\n", isBestCase ? "Best Case" : "Worst Case");
+    fclose(outputFile);
+
+    printf("Sorting completed. Check '%s' for results.\n", outputFileName);
+    printf("Total comparisons: %d\n", totalComparisons);
+    printf("Partitioning: %s\n", isBestCase ? "Best Case" : "Worst Case");
+
+    free(arr);
+}
+
+int main() {
+    int choice;
+
+    printf("Choose the type of data to sort:\n");
+    printf("1. Ascending Order Data\n2. Descending Order Data\n3. Random Data\n");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            sortFromFileAndWrite("inAsce.dat", "outQuickAsce.dat");
+            break;
+        case 2:
+            sortFromFileAndWrite("inDesc.dat", "outQuickDesc.dat");
+            break;
+        case 3:
+            sortFromFileAndWrite("inRand.dat", "outQuickRand.dat");
+            break;
+        default:
+            printf("Invalid choice.\n");
+            break;
+    }
+
+    return 0;
+}

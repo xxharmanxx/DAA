@@ -1,0 +1,47 @@
+#include <stdio.h>
+
+int binarySearch(int arr[], int l, int r, int key, int *comparisons) {
+    int result = -1;
+    while (l <= r) {
+        int mid = l + (r - l) / 2;
+        (*comparisons)++;
+
+        if (arr[mid] == key) {
+            result = mid; // Record the occurrence
+            r = mid - 1;  // Search the left half for earlier occurrences
+        } else if (arr[mid] < key) {
+            l = mid + 1;
+        } else {
+            r = mid - 1;
+        }
+    }
+    return result;
+}
+
+int main() {
+    int n, key, comparisons = 0;
+
+    printf("Enter size of array: ");
+    scanf("%d", &n);
+
+    int arr[n];
+    printf("Enter elements of the array: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    printf("Enter the key to be searched: ");
+    scanf("%d", &key);
+
+    int result = binarySearch(arr, 0, n - 1, key, &comparisons);
+
+    if (result != -1) {
+        printf("%d found at index position %d\n", key, result);
+    } else {
+        printf("%d not found\n", key);
+    }
+
+    printf("Number of comparisons: %d\n", comparisons);
+
+    return 0;
+}

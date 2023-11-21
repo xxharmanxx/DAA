@@ -1,0 +1,137 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    char alphabet;
+    int frequency;
+} SYMBOL;
+
+typedef struct treeNode {
+    SYMBOL data;
+    struct treeNode *left, *right;
+} TreeNode;
+
+TreeNode* createNode(SYMBOL data) {
+    TreeNode* newNode = (TreeNode*) malloc(sizeof(TreeNode));
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+typedef struct {
+    TreeNode** array;
+    int size;
+    int capacity;
+} MinHeap;
+
+MinHeap* createMinHeap(int capacity) {
+    MinHeap* minHeap = (MinHeap*) malloc(sizeof(MinHeap));
+    minHeap->size = 0;
+    minHeap->capacity = capacity;
+    minHeap->array = (TreeNode**) malloc(minHeap->capacity * sizeof(TreeNode*));
+    return minHeap;
+}
+
+void swapTreeNode(TreeNode** a, TreeNode** b) {
+    TreeNode* temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void minHeapify(MinHeap* minHeap, int idx) {
+    int smallest = idx;
+    int left = 2 * idx + 1;
+    int right = 2 * idx + 2;
+
+    if (left < minHeap->size && minHeap->array[left]->data.frequency < minHeap->array[smallest]->data.frequency)
+        smallest = left;
+
+    if (right < minHeap->size && minHeap->array[right]->data.frequency < minHeap->array[smallest]->data.frequency)
+        smallest = right;
+
+    if (smallest != idx) {
+        swapTreeNode(&minHeap->array[smallest], &minHeap->array[idx]);
+        minHeapify(minHeap, smallest);
+    }
+}
+
+TreeNode* extractMin(MinHeap* minHeap) {
+    TreeNode* temp = minHeap->array[0];
+    minHeap->array[0] = minHeap->array[minHeap->size - 1];
+    minHeap->size--;
+    minHeapify(minHeap, 0);
+    return temp;
+}
+
+void insertMinHeap(MinHeap* minHeap, TreeNode* treeNode) {
+    minHeap->size++;
+    int i = minHeap->size - 1;
+    while (i && treeNode->data.frequency < minHeap->array[(i - 1) / 2]->data.frequency) {
+        minHeap->array[i] = minHeap->array[(i - 1) / 2];
+        i = (i - 1) / 2;
+    }
+    minHeap->array[i] = treeNode;
+}
+
+void buildMinHeap(MinHeap* minHeap) {
+    int n = minHeap->size - 1;
+    int i;
+    for (i = (n - 1) / 2; i >= 0; --i)
+        minHeapify(minHeap, i);
+}
+
+void printInOrder(TreeNode* root) {
+    if (root != NULL) {
+        printInOrder(root->left);
+        printf("%c ", root->data.alphabet);
+        printInOrder(root->right);
+    }
+}
+
+TreeNode* buildHuffmanTree(SYMBOL arr[], int size) {
+    TreeNode *left, *right, *top;
+    MinHeap* minHeap = createMinHeap(size);
+
+    for (int i = 0; i < size; ++i)
+        minHeap->array[i] = createNode(arr[i]);
+
+    minHeap->size = size;
+    buildMinHeap(minHeap);
+
+    while (minHeap->size > 1) {
+        left = extractMin(minHeap);
+        right = extractMin(minHeap);
+        SYMBOL topData = {'$', left->data.frequency + right->data.frequency};
+        top = createNode(topData);
+        top->left = left;
+        top->right = right;
+        insertMinHeap(minHeap, top);
+    }
+
+    return extractMin(minHeap);
+}
+
+int main() {
+    int n;
+    printf("Enter the number of distinct alphabets: ");
+    scanf("%d", &n);
+
+    SYMBOL arr[n];
+    printf("Enter the alphabets: ");
+    for (int i = 0; i < n; i++) {
+        scanf(" %c", &arr[i].alphabet);
+    }
+
+    printf("Enter its frequencies: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i].frequency);
+    }
+
+    TreeNode* root = buildHuffmanTree(arr, n);
+
+    printf("In-order traversal of the tree (Huffman): ");
+    printInOrder(root);
+    printf("\n");
+
+    return 0;
+}

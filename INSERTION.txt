@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int insertionSort(int arr[], int n) {
+    int i, key, j, comparisons = 0;
+    for (i = 1; i < n; i++) {
+        key = arr[i];
+        j = i - 1;
+
+        // Move elements that are greater than key to one position ahead
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+            comparisons++;
+        }
+        arr[j + 1] = key;
+    }
+    return comparisons;
+}
+
+void printArray(int arr[], int n, FILE *outputFile) {
+    for (int i = 0; i < n; i++) {
+        fprintf(outputFile, "%d ", arr[i]);
+        printf("%d ", arr[i]);
+    }
+    fprintf(outputFile, "\n");
+    printf("\n");
+}
+
+int main() {
+    int choice, n, comparisons;
+    FILE *inputFile, *outputFile;
+    char inputFileName[50], outputFileName[50] = "output.txt";
+
+    printf("Choose the input data scenario:\n");
+    printf("1. Best Case\n2. Worst Case\n3. Average Case\n");
+    scanf("%d", &choice);
+
+    // Create file name based on choice
+    sprintf(inputFileName, "input%d.txt", choice);
+
+    // Open input and output files
+    inputFile = fopen(inputFileName, "r");
+    outputFile = fopen(outputFileName, "w");
+
+    if (inputFile == NULL || outputFile == NULL) {
+        printf("Error in opening file.\n");
+        return 1;
+    }
+
+    // Read data from file
+    fscanf(inputFile, "%d", &n);
+    int arr[n];
+    for (int i = 0; i < n; i++) {
+        fscanf(inputFile, "%d", &arr[i]);
+    }
+
+    // Sort the array
+    comparisons = insertionSort(arr, n);
+
+    // Write and print the sorted array
+    fprintf(outputFile, "Sorted Array:\n");
+    printf("Sorted Array:\n");
+    printArray(arr, n, outputFile);
+
+    // Print number of comparisons
+    fprintf(outputFile, "Number of comparisons: %d\n", comparisons);
+    printf("Number of comparisons: %d\n", comparisons);
+
+    // Conclude best or worst case
+    if (comparisons == n - 1) {
+        fprintf(outputFile, "Input scenario is Best Case.\n");
+        printf("Input scenario is Best Case.\n");
+    } else if (comparisons > n) {
+        fprintf(outputFile, "Input scenario is Worst Case.\n");
+        printf("Input scenario is Worst Case.\n");
+    } else {
+        fprintf(outputFile, "Input scenario is Average Case.\n");
+        printf("Input scenario is Average Case.\n");
+    }
+
+    fclose(inputFile);
+    fclose(outputFile);
+
+    return 0;
+}

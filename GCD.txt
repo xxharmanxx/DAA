@@ -1,0 +1,23 @@
+#include <stdio.h>
+
+// Recursive function to find the GCD of two numbers
+int gcd(int a, int b) {
+    if (b == 0) return a;
+    return gcd(b, a % b);
+}
+
+int main() {
+    int pairs, a, b;
+
+    printf("Enter the number of pairs of numbers: ");
+    scanf("%d", &pairs);
+
+    for (int i = 0; i < pairs; i++) {
+        printf("Enter pair %d (two numbers separated by space): ", i + 1);
+        scanf("%d %d", &a, &b);
+        printf("The GCD of %d and %d is %d\n", a, b, gcd(a, b));
+    }
+
+    return 0;
+}
+

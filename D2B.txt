@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+// Recursive function to convert a decimal number to binary
+void decimalToBinary(int n) {
+    if (n > 1) {
+        decimalToBinary(n / 2);
+    }
+    printf("%d", n % 2);
+}
+
+int main() {
+    int n, number;
+
+    printf("Enter the number of decimal values to convert: ");
+    scanf("%d", &n);
+
+    printf("Enter %d decimal numbers:\n", n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &number);
+        printf("Binary of %d: ", number);
+        decimalToBinary(number);
+        printf("\n");
+    }
+
+    return 0;
+}
